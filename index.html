@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人学业档案 | 成绩分析平台</title>
+
+<style>
+:root {
+  --navy:#14233f;
+  --blue:#3978f6;
+  --bg:#f4f7fb;
+  --text:#24334d;
+  --muted:#8491a7;
+  --border:#e8edf5;
+  --green:#18a878;
+  --orange:#f59e42;
+  --red:#e85d75;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",
+    "Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input,select,textarea { font:inherit; }
+
+button { cursor:pointer; }
+
+.layout {
+  display:flex;
+  min-height:100vh;
+}
+
+.sidebar {
+  width:230px;
+  flex-shrink:0;
+  background:var(--navy);
+  color:white;
+  padding:26px 16px;
+}
+
+.brand {
+  padding:4px 12px 28px;
+  border-bottom:1px solid #ffffff1c;
+  margin-bottom:24px;
+}
+
+.brand-icon {
+  display:inline-grid;
+  place-items:center;
+  width:39px;
+  height:39px;
+  background:#3978f6;
+  border-radius:12px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.brand h2 {
+  margin:0;
+  font-size:17px;
+}
+
+.brand p {
+  color:#9cabc7;
+  font-size:12px;
+  margin-top:8px;
+}
+
+.nav-label {
+  color:#8495b5;
+  font-size:11px;
+  padding:14px 12px 8px;
+  letter-spacing:1px;
+}
+
+.nav-btn {
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:12px;
+  margin:4px 0;
+  color:#c4cee0;
+  background:transparent;
+  border:0;
+  border-radius:9px;
+  font-size:13px;
+}
+
+.nav-btn:hover,.nav-btn.active {
+  color:white;
+  background:#ffffff17;
+}
+
+.nav-btn.active {
+  box-shadow:inset 3px 0 #70a0ff;
+}
+
+.sidebar-bottom {
+  margin-top:40px;
+  padding:14px 12px;
+  color:#91a1bf;
+  font-size:11px;
+  line-height:1.8;
+  border-top:1px solid #ffffff1c;
+}
+
+.main {
+  flex:1;
+  min-width:0;
+  padding:26px 30px;
+}
+
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.topbar h1 {
+  font-size:24px;
+  margin:0;
+}
+
+.topbar p {
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.top-actions {
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+.btn {
+  border:1px solid var(--border);
+  background:white;
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:9px;
+  font-size:12px;
+}
+
+.btn-primary {
+  color:white;
+  background:var(--blue);
+  border-color:var(--blue);
+}
+
+.btn-danger {
+  color:#d8465d;
+  border-color:#f4d7dc;
+}
+
+.page { display:none; }
+.page.active { display:block; }
+
+.grid {
+  display:grid;
+  gap:18px;
+}
+
+.stats {
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  margin-bottom:20px;
+}
+
+.card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:21px;
+  min-width:0;
+}
+
+.stat-label {
+  font-size:12px;
+  color:var(--muted);
+}
+
+.stat-value {
+  font-size:29px;
+  font-weight:700;
+  margin:13px 0 8px;
+  letter-spacing:-1px;
+}
+
+.stat-foot {
+  font-size:11px;
+  color:var(--muted);
+}
+
+.blue { color:var(--blue); }
+.green { color:var(--green); }
+.orange { color:var(--orange); }
+.red { color:var(--red); }
+
+.two-col {
+  grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+  margin-bottom:20px;
+}
+
+.card-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.card-head h3 {
+  font-size:15px;
+  margin:0;
+}
+
+.card-head span {
+  font-size:11px;
+  color:var(--muted);
+}
+
+canvas {
+  display:block;
+  width:100%;
+  max-width:100%;
+}
+
+.chart-wrap {
+  position:relative;
+  width:100%;
+}
+
+.chart-note {
+  font-size:12px;
+  line-height:1.8;
+  color:var(--muted);
+  margin-top:12px;
+}
+
+.table-wrap { overflow-x:auto; }
+
+table {
+  border-collapse:collapse;
+  width:100%;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+th {
+  text-align:left;
+  color:var(--muted);
+  background:#f8faff;
+  font-weight:500;
+}
+
+td,th {
+  padding:13px 12px;
+  border-bottom:1px solid var(--border);
+}
+
+tbody tr:hover { background:#fafcff; }
+
+.tag {
+  display:inline-block;
+  border-radius:6px;
+  padding:4px 8px;
+  font-size:11px;
+  background:#edf3ff;
+  color:#3978f6;
+}
+
+.tag-green {
+  background:#e9f8f1;
+  color:#16865f;
+}
+
+.empty {
+  color:var(--muted);
+  padding:25px 0;
+  text-align:center;
+  font-size:13px;
+}
+
+.report {
+  line-height:1.9;
+  font-size:13px;
+}
+
+.report h3 { font-size:15px; }
+
+.report-item {
+  border-left:3px solid var(--blue);
+  padding:10px 15px;
+  margin:12px 0;
+  background:#f7f9ff;
+  border-radius:0 8px 8px 0;
+}
+
+.form-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+
+.field label {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+.field input,.field select {
+  width:100%;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:white;
+  color:var(--text);
+}
+
+.section-title {
+  margin:24px 0 13px;
+  font-size:15px;
+}
+
+.subject-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+
+.subject-box {
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:9px;
+}
+
+.subject-box label {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+.subject-box input {
+  width:100%;
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:6px;
+}
+
+.notice {
+  background:#fff8e9;
+  border:1px solid #f4e4bf;
+  color:#806126;
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:12px;
+  line-height:1.8;
+  margin-bottom:18px;
+}
+
+.footer {
+  text-align:center;
+  color:#a0aabc;
+  font-size:11px;
+  margin:28px 0 8px;
+}
+
+@media(max-width:1000px) {
+  .sidebar { width:190px; }
+  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .two-col { grid-template-columns:1fr; }
+  .main { padding:20px; }
+}
+
+@media(max-width:650px) {
+  .layout { display:block; }
+  .sidebar { width:100%; padding:15px; }
+  .brand { padding-bottom:12px; margin-bottom:10px; }
+  .nav-label,.sidebar-bottom { display:none; }
+  .nav-btn {
+    display:inline-block;
+    width:auto;
+    padding:9px 11px;
+    margin:2px;
+  }
+  .main { padding:15px; }
+  .topbar { align-items:flex-start; }
+  .topbar h1 { font-size:20px; }
+  .stats { gap:10px; }
+  .card { padding:15px; }
+  .stat-value { font-size:24px; }
+  .subject-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .form-grid { grid-template-columns:1fr; }
+}
+
+@media print {
+  .sidebar,.top-actions,.no-print { display:none!important; }
+  .main { padding:0; }
+  .page { display:none!important; }
+  .page.active { display:block!important; }
+  body { background:white; }
+  .card { break-inside:avoid; }
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">A</div>
+    <h2>学业数据中心</h2>
+    <p>STUDENT ANALYTICS</p>
+  </div>
+
+  <div class="nav-label">分析中心</div>
+  <button class="nav-btn active" data-page="overview">▦　学业总览</button>
+  <button class="nav-btn" data-page="exams">▤　考试档案</button>
+  <button class="nav-btn" data-page="analysis">◫　成绩分析</button>
+  <button class="nav-btn" data-page="trends">⌁　成绩走势图</button>
+  <button class="nav-btn" data-page="report">▧　成绩报告</button>
+
+  <div class="nav-label">系统管理</div>
+  <button class="nav-btn" data-page="data">⚙　数据管理</button>
+
+  <div class="sidebar-bottom">
+    个人学业档案系统<br>
+    本地数据存储版本<br>
+    数据仅保存在当前浏览器
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 id="pageTitle">学业总览</h1>
+      <p id="pageSubtitle">全面了解你的考试表现与学科情况</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="exportData()">导出数据</button>
+      <button class="btn btn-primary" onclick="openAddExam()">＋ 新增考试</button>
+    </div>
+  </header>
+
+  <div class="notice">
+    <b>数据说明：</b>目前预置的是第一次月考记录。部分学科满分尚未确认，
+    因此暂不计算得分率。只有一场考试时，系统不会编造历史趋势。
+  </div>
+
+  <!-- 总览 -->
+  <section class="page active" id="page-overview">
+    <div class="grid stats">
+      <div class="card">
+        <div class="stat-label">当前考试总分</div>
+        <div class="stat-value blue" id="statTotal">454</div>
+        <div class="stat-foot" id="statExamName">第一次月考</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">年级排名</div>
+        <div class="stat-value" id="statRank">149</div>
+        <div class="stat-foot">名次越小，排名越靠前</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">已记录考试</div>
+        <div class="stat-value green" id="statExams">1</div>
+        <div class="stat-foot">可继续添加月考、期中和期末</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">三科总分</div>
+        <div class="stat-value orange" id="statThree">176</div>
+        <div class="stat-foot">语文 + 数学 + 外语</div>
+      </div>
+    </div>
+
+    <div class="grid two-col">
+      <div class="card">
+        <div class="card-head">
+          <h3>各科成绩对比</h3>
+          <span>个人 / 年级最高 / 班级平均</span>
+        </div>
+        <div class="chart-wrap"><canvas id="overviewBar" height="290"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>各科分数构成</h3>
+          <span>个人成绩</span>
+        </div>
+        <div class="chart-wrap"><canvas id="overviewDonut" height="290"></canvas></div>
+        <div class="chart-note">圆环展示各科分数在当前总分中的相对构成，不代表各科得分率。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>最近考试记录</h3>
+        <button class="btn" onclick="showPage('exams')">查看全部</button>
+      </div>
+      <div class="table-wrap" id="recentTable"></div>
+    </div>
+  </section>
+
+  <!-- 考试档案 -->
+  <section class="page" id="page-exams">
+    <div class="card">
+      <div class="card-head">
+        <h3>考试档案</h3>
+        <div class="top-actions">
+          <select id="examFilter" class="btn" onchange="renderExams()">
+            <option value="全部">全部考试</option>
+            <option value="月考">月考</option>
+            <option value="期中考试">期中考试</option>
+            <option value="期末考试">期末考试</option>
+          </select>
+          <button class="btn btn-primary" onclick="openAddExam()">＋ 新增考试</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="examTable"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><h3>考试详情</h3><span>选择上方记录后查看</span></div>
+      <div id="examDetail" class="empty">请选择一场考试查看详情。</div>
+    </div>
+  </section>
+
+  <!-- 成绩分析 -->
+  <section class="page" id="page-analysis">
+    <div class="grid two-col">
+      <div class="card">
+        <div class="card-head"><h3>各科成绩对比</h3><span>当前选中考试</span></div>
+        <canvas id="analysisBar" height="300"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>与班级平均分差值</h3><span>个人分数 − 班级平均分</span></div>
+        <canvas id="differenceBar" height="300"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>学科数据明细</h3><span>不推断未知的满分</span></div>
+      <div class="table-wrap" id="analysisTable"></div>
+    </div>
+  </section>
+
+  <!-- 趋势 -->
+  <section class="page" id="page-trends">
+    <div class="grid two-col">
+      <div class="card">
+        <div class="card-head"><h3>总分变化趋势</h3><span>按考试日期排序</span></div>
+        <canvas id="totalTrend" height="280"></canvas>
+        <div class="chart-note" id="totalTrendNote"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>年级排名变化</h3><span>数值越低越好</span></div>
+        <canvas id="rankTrend" height="280"></canvas>
+        <div class="chart-note" id="rankTrendNote"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h3>单科成绩走势</h3>
+        <select id="trendSubject" class="btn" onchange="renderTrendSubject()"></select>
+      </div>
+      <canvas id="subjectTrend" height="300"></canvas>
+      <div class="chart-note" id="subjectTrendNote"></div>
+    </div>
+  </section>
+
+  <!-- 报告 -->
+  <section class="page" id="page-report">
+    <div class="card">
+      <div class="card-head">
+        <h3>学业分析报告</h3>
+        <button class="btn btn-primary" onclick="window.print()">打印 / 另存为 PDF</button>
+      </div>
+      <div id="reportContent" class="report"></div>
+    </div>
+  </section>
+
+  <!-- 数据管理 -->
+  <section class="page" id="page-data">
+    <div class="card">
+      <div class="card-head"><h3>数据管理</h3></div>
+      <p style="font-size:13px;line-height:1.9;color:#8491a7">
+        考试记录默认保存在当前浏览器的本地存储中。清理浏览器数据可能导致记录丢失，
+        请定期导出 JSON 备份。导出的文件可能包含姓名、学号和成绩，请妥善保管。
+      </p>
+      <div class="top-actions">
+        <button class="btn btn-primary" onclick="openAddExam()">＋ 新增考试</button>
+        <button class="btn" onclick="exportData()">导出 JSON 备份</button>
+        <button class="btn" onclick="document.getElementById('importFile').click()">导入 JSON 备份</button>
+        <button class="btn btn-danger" onclick="resetData()">恢复初始数据</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden onchange="importData(event)">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><h3>个人资料</h3></div>
+      <div class="form-grid">
+        <div class="field"><label>姓名</label><input id="profileName" value="文楚伯"></div>
+        <div class="field"><label>学号</label><input id="profileId" value="0120"></div>
+      </div>
+      <div style="margin-top:15px">
+        <button class="btn btn-primary" onclick="saveProfile()">保存个人资料</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">
+        <h3>各科满分设置</h3>
+        <span>请根据正式试卷填写</span>
+      </div>
+      <p style="font-size:12px;color:#8491a7;line-height:1.8">
+        未知满分请留空。填写后，系统可计算相应科目的得分率。不要根据猜测填写。
+      </p>
+      <div id="maxScoreForm" class="subject-grid"></div>
+      <button class="btn btn-primary" style="margin-top:15px" onclick="saveMaxScores()">保存满分设置</button>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><h3>数据安全提示</h3></div>
+      <div class="report">
+        <div class="report-item">本网站目前是单机静态网页，没有用户登录和云端数据库。</div>
+        <div class="report-item">浏览器本地存储不是访问权限控制。公开网站上的数据仍可能被访问。</div>
+        <div class="report-item">公开发布前，请删除真实姓名、学号和成绩，或仅使用虚构示例数据。</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">PERSONAL ACADEMIC ANALYTICS · 个人学业档案</div>
+</main>
+</div>
+
+<!-- 新增考试弹窗 -->
+<div id="examModal" style="display:none;position:fixed;inset:0;background:#14233f99;z-index:10;overflow:auto;padding:20px">
+  <div style="max-width:760px;background:white;border-radius:15px;padding:24px;margin:25px auto">
+    <div class="card-head">
+      <h3 id="modalTitle">新增考试记录</h3>
+      <button class="btn" onclick="closeModal()">关闭</button>
+    </div>
+
+    <form id="examForm">
+      <input type="hidden" id="editExamId">
+      <div class="form-grid">
+        <div class="field"><label>考试名称</label><input id="examName" required placeholder="例如：高一第二次月考"></div>
+        <div class="field">
+          <label>考试类型</label>
+          <select id="examType">
+            <option>月考</option><option>期中考试</option><option>期末考试</option>
+          </select>
+        </div>
+        <div class="field"><label>考试日期</label><input id="examDate" type="date" required></div>
+        <div class="field"><label>年级排名（可留空）</label><input id="examRank" type="number" min="1" placeholder="名次"></div>
+        <div class="field"><label>总分（可留空，自动按各科求和）</label><input id="examTotal" type="number" step="0.01" placeholder="自动计算"></div>
+        <div class="field"><label>三科总分（可留空，自动计算）</label><input id="examThree" type="number" step="0.01" placeholder="自动计算"></div>
+      </div>
+
+      <h4 class="section-title">个人成绩</h4>
+      <div id="personalInputs" class="subject-grid"></div>
+
+      <h4 class="section-title">年级最高分</h4>
+      <div id="highInputs" class="subject-grid"></div>
+
+      <h4 class="section-title">班级平均分</h4>
+      <div id="avgInputs" class="subject-grid"></div>
+
+      <p style="font-size:12px;color:#8491a7;line-height:1.8">
+        以上成绩按实际试卷填写；没有数据的项目可以留空。保存后会自动更新图表与报告。
+      </p>
+
+      <div class="top-actions" style="justify-content:flex-end;margin-top:18px">
+        <button type="button" class="btn" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn btn-primary">保存考试</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const SUBJECTS = ["语文","数学","外语","物理","化学","生物","历史","地理","政治"];
+const THREE = ["语文","数学","外语"];
+const STORE_KEY = "academicDashboardDataV1";
+
+const INITIAL_DATA = {
+  profile:{name:"文楚伯",studentId:"0120"},
+  maxScores:{
+    "语文":100,
+    "数学":null,
+    "外语":null,
+    "物理":null,
+    "化学":null,
+    "生物":null,
+    "历史":null,
+    "地理":null,
+    "政治":null
+  },
+  exams:[{
+    id:"exam-1",
+    name:"文楚伯的高一第一次月考",
+    type:"月考",
+    date:"2026-10-01",
+    rank:149,
+    total:454,
+    threeTotal:176,
+    scores:{
+      "语文":51,"数学":48,"外语":77,"物理":45,"化学":22,
+      "生物":40,"历史":56,"地理":78,"政治":37
+    },
+    highs:{
+      "语文":81,"数学":143,"外语":142.5,"物理":82,"化学":85,
+      "生物":87,"历史":90,"地理":94,"政治":80
+    },
+    averages:{
+      "语文":66.11,"数学":93.41,"外语":95.78,"物理":57.26,
+      "化学":39.81,"生物":64.07,"历史":70.37,"地理":77.56,"政治":48.33
+    },
+    gradeHighTotal:797,
+    gradeHighThree:346,
+    classAverageTotal:612.7
+  }]
+};
+
+let db = loadData();
+let selectedExamId = db.exams.length ? db.exams[0].id : null;
+let charts = {};
+
+const PAGE_INFO = {
+  overview:["学业总览","全面了解你的考试表现与学科情况"],
+  exams:["考试档案","集中管理月考、期中考试和期末考试"],
+  analysis:["成绩分析","对比个人成绩、年级最高分和班级平均分"],
+  trends:["成绩走势图","随着考试记录增加，持续观察成绩变化"],
+  report:["成绩报告","生成基于已录入数据的学业分析"],
+  data:["数据管理","管理考试记录、个人资料和备份"]
+};
+
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function loadData(){
+  try{
+    const saved=localStorage.getItem(STORE_KEY);
+    if(saved){
+      const d=JSON.parse(saved);
+      if(d && Array.isArray(d.exams) && d.profile) return d;
+    }
+  }catch(e){}
+  return clone(INITIAL_DATA);
+}
+
+function saveData(){
+  localStorage.setItem(STORE_KEY,JSON.stringify(db));
+}
+
+function currentExam(){
+  return db.exams.find(e=>e.id===selectedExamId) || db.exams[0] || null;
+}
+
+function n(v){
+  if(v===null || v===undefined || v==="") return null;
+  const x=Number(v);
+  return Number.isFinite(x)?x:null;
+}
+
+function fmt(v){
+  return v===null || v===undefined || v==="" ? "—" :
+    Number(v).toLocaleString("zh-CN",{maximumFractionDigits:2});
+}
+
+function sumSubjects(scores, names=SUBJECTS){
+  let total=0, count=0;
+  names.forEach(s=>{
+    const v=n(scores?.[s]);
+    if(v!==null){total+=v;count++;}
+  });
+  return count?Number(total.toFixed(2)):null;
+}
+
+function esc(s){
+  return String(s??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function sortedExams(){
+  return [...db.exams].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+}
+
+function showPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page-"+name).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>{
+    b.classList.toggle("active",b.dataset.page===name);
+  });
+  document.getElementById("pageTitle").textContent=PAGE_INFO[name][0];
+  document.getElementById("pageSubtitle").textContent=PAGE_INFO[name][1];
+  renderAll();
+}
+
+document.querySelectorAll(".nav-btn").forEach(b=>{
+  b.addEventListener("click",()=>showPage(b.dataset.page));
+});
+
+function canvasSetup(id,height=280){
+  const c=document.getElementById(id);
+  if(!c)return null;
+  const w=Math.max(280,c.parentElement.clientWidth-2);
+  const ratio=window.devicePixelRatio||1;
+  c.width=w*ratio;
+  c.height=height*ratio;
+  c.style.height=height+"px";
+  const ctx=c.getContext("2d");
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  ctx.clearRect(0,0,w,height);
+  return {c,ctx,w,h:height};
+}
+
+function drawText(ctx,text,x,y,color="#8491a7",font="11px sans-serif",align="center"){
+  ctx.fillStyle=color;ctx.font=font;ctx.textAlign=align;
+  ctx.fillText(String(text),x,y);
+}
+
+function drawBar(id,labels,series,opts={}){
+  const box=canvasSetup(id,opts.height||290);
+  if(!box)return;
+  const {ctx,w,h}=box;
+  const left=opts.left??38,right=12,top=22,bottom=54;
+  const pw=w-left-right,ph=h-top-bottom;
+  const vals=series.flatMap(s=>s.values).filter(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
+  const max=Math.max(10,...vals)*1.15;
+  ctx.strokeStyle="#e9eef6";ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=top+ph*i/4;
+    ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();
+    drawText(ctx,fmt(max*(1-i/4)),left-7,y+4,"#95a1b5","10px sans-serif","right");
+  }
+  const group=pw/Math.max(labels.length,1);
+  const bw=Math.min(18,group/(series.length+1));
+  labels.forEach((label,i)=>{
+    series.forEach((s,j)=>{
+      const v=n(s.values[i]);
+      if(v===null)return;
+      const barH=v/max*ph;
+      const x=left+i*group+group/2+(j-(series.length-1)/2)*bw-bw/2;
+      ctx.fillStyle=s.color;
+      ctx.beginPath();
+      ctx.roundRect(x,top+ph-barH,bw-2,barH,3);
+      ctx.fill();
+    });
+    ctx.save();
+    ctx.translate(left+i*group+group/2,top+ph+15);
+    ctx.rotate(labels.length>6?-Math.PI/4:0);
+    drawText(ctx,label,0,0,"#77859b","10px sans-serif","center");
+    ctx.restore();
+  });
+  let lx=left;
+  const ly=h-8;
+  series.forEach(s=>{
+    ctx.fillStyle=s.color;ctx.fillRect(lx,ly-8,8,8);
+    drawText(ctx,s.name,lx+12,ly,"#64728a","10px sans-serif","left");
+    lx+=Math.max(65,s.name.length*11+25);
+  });
+}
+
+function drawDonut(id,labels,values){
+  const box=canvasSetup(id,290);
+  if(!box)return;
+  const {ctx,w,h}=box;
+  const total=values.reduce((a,v)=>a+(n(v)||0),0);
+  if(total<=0){
+    drawText(ctx,"暂无成绩数据",w/2,h/2);
+    return;
+  }
+  const colors=["#3978f6","#18a878","#f59e42","#9270db","#e85d75",
+    "#25a9c6","#74849b","#cf7cbd","#91b84b"];
+  const cx=w/2,cy=125,r=Math.min(82,w*0.22),inner=r*0.61;
+  let angle=-Math.PI/2;
+  values.forEach((v,i)=>{
+    const value=n(v)||0;
+    const next=angle+value/total*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,next);ctx.closePath();
+    ctx.fillStyle=colors[i%colors.length];ctx.fill();
+    angle=next;
+  });
+  ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);
+  ctx.fillStyle="#fff";ctx.fill();
+  drawText(ctx,fmt(total),cx,cy+2,"#24334d","bold 21px sans-serif");
+  drawText(ctx,"总分",cx,cy+20,"#8491a7","11px sans-serif");
+
+  const cols=3,cell=w/cols;
+  labels.forEach((label,i)=>{
+    const row=Math.floor(i/cols),col=i%cols;
+    const x=col*cell+8,y=225+row*22;
+    ctx.fillStyle=colors[i%colors.length];ctx.fillRect(x,y-9,8,8);
+    drawText(ctx,label,x+13,y,label.length>4?"#64728a":"#64728a","10px sans-serif","left");
+    drawText(ctx,fmt(values[i]),x+cell-25,y,"#24334d","10px sans-serif","right");
+  });
+}
+
+function drawLine(id,labels,values,opts={}){
+  const box=canvasSetup(id,opts.height||280);
+  if(!box)return;
+  const {ctx,w,h}=box;
+  const valid=values.map(n).filter(v=>v!==null);
+  if(!valid.length){
+    drawText(ctx,"暂无可绘制的数据",w/2,h/2);
+    return;
+  }
+  const left=42,right=18,top=22,bottom=48;
+  const pw=w-left-right,ph=h-top-bottom;
+  let min=Math.min(...valid),max=Math.max(...valid);
+  if(min===max){min-=Math.abs(min)*0.1+1;max+=Math.abs(max)*0.1+1;}
+  const pad=(max-min)*0.12;min-=pad;max+=pad;
+  for(let i=0;i<=4;i++){
+    const y=top+ph*i/4;
+    ctx.strokeStyle="#e9eef6";ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();
+    drawText(ctx,fmt(max-(max-min)*i/4),left-7,y+4,"#95a1b5","10px sans-serif","right");
+  }
+  const count=Math.max(labels.length,1);
+  const pts=[];
+  values.forEach((v,i)=>{
+    if(n(v)===null)return;
+    const x=count===1?left+pw/2:left+i*pw/(count-1);
+    const y=top+(max-v)/(max-min)*ph;
+    pts.push({x,y,v,i});
+  });
+  if(pts.length>1){
+    ctx.strokeStyle=opts.color||"#3978f6";ctx.lineWidth=2.5;ctx.beginPath();
+    pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.stroke();
+  }
+  pts.forEach(p=>{
+    ctx.fillStyle=opts.color||"#3978f6";
+    ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();
+    drawText(ctx,fmt(p.v),p.x,p.y-10,"#24334d","11px sans-serif");
+  });
+  labels.forEach((l,i)=>{
+    const x=count===1?left+pw/2:left+i*pw/(count-1);
+    drawText(ctx,l,x,top+ph+23,"#77859b","10px sans-serif");
+  });
+}
+
+function renderOverview(){
+  const e=currentExam();
+  document.getElementById("statTotal").textContent=e?fmt(e.total??sumSubjects(e.scores)):"—";
+  document.getElementById("statRank").textContent=e?fmt(e.rank):"—";
+  document.getElementById("statExams").textContent=db.exams.length;
+  document.getElementById("statThree").textContent=e?fmt(e.threeTotal??sumSubjects(e.scores,THREE)):"—";
+  document.getElementById("statExamName").textContent=e?e.name:"尚无考试记录";
+
+  if(e){
+    drawBar("overviewBar",SUBJECTS,[
+      {name:"个人成绩",values:SUBJECTS.map(s=>n(e.scores?.[s])),color:"#3978f6"},
+      {name:"年级最高",values:SUBJECTS.map(s=>n(e.highs?.[s])),color:"#18a878"},
+      {name:"班级平均",values:SUBJECTS.map(s=>n(e.averages?.[s])),color:"#f59e42"}
+    ],{height:290});
+    drawDonut("overviewDonut",SUBJECTS,SUBJECTS.map(s=>n(e.scores?.[s])||0));
+  }else{
+    drawBar("overviewBar",[],[]);
+    drawDonut("overviewDonut",[],[]);
+  }
+
+  const exams=[...db.exams].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5);
+  document.getElementById("recentTable").innerHTML=tableHTML(exams,true);
+}
+
+function tableHTML(exams,showActions){
+  if(!exams.length)return '<div class="empty">暂无考试记录，请点击“新增考试”。</div>';
+  return `<table><thead><tr>
+    <th>考试名称</th><th>类型</th><th>日期</th><th>总分</th><th>年级排名</th><th>操作</th>
+  </tr></thead><tbody>${exams.map(e=>`<tr>
+    <td>${esc(e.name)}</td><td><span class="tag">${esc(e.type)}</span></td>
+    <td>${esc(e.date||"—")}</td><td><b>${fmt(e.total??sumSubjects(e.scores))}</b></td>
+    <td>${fmt(e.rank)}</td><td>
+    <button class="btn" onclick="selectExam('${e.id}')">查看</button>
+    ${showActions? "":` <button class="btn" onclick="editExam('${e.id}')">编辑</button>
+    <button class="btn btn-danger" onclick="deleteExam('${e.id}')">删除</button>`}
+    </td></tr>`).join("")}</tbody></table>`;
+}
+
+function renderExams(){
+  const filter=document.getElementById("examFilter")?.value||"全部";
+  const list=[...db.exams].sort((a,b)=>(b.date||"").localeCompare(a.date||""))
+    .filter(e=>filter==="全部"||e.type===filter);
+  document.getElementById("examTable").innerHTML=tableHTML(list,false);
+  renderExamDetail();
+}
+
+function selectExam(id){
+  selectedExamId=id;
+  renderAll();
+  showPage("exams");
+}
+
+function renderExamDetail(){
+  const e=currentExam(),el=document.getElementById("examDetail");
+  if(!e){el.innerHTML='<div class="empty">暂无考试记录。</div>';return;}
+  el.innerHTML=`
+    <p><b>${esc(e.name)}</b>　<span class="tag">${esc(e.type)}</span></p>
+    <p style="color:#8491a7;font-size:12px">日期：${esc(e.date||"—")}　年级排名：${fmt(e.rank)}</p>
+    <div class="table-wrap"><table><thead><tr>
+      <th>科目</th><th>个人成绩</th><th>年级最高分</th><th>班级平均分</th><th>与班均差值</th>
+    </tr></thead><tbody>${SUBJECTS.map(s=>{
+      const score=n(e.scores?.[s]),avg=n(e.averages?.[s]),diff=score!==null&&avg!==null?score-avg:null;
+      return `<tr><td>${s}</td><td>${fmt(score)}</td><td>${fmt(e.highs?.[s])}</td>
+      <td>${fmt(avg)}</td><td class="${diff===null?"":diff>=0?"green":"red"}">${diff===null?"—":(diff>0?"+":"")+fmt(diff)}</td></tr>`;
+    }).join("")}</tbody></table></div>
+    <p>总分：<b>${fmt(e.total??sumSubjects(e.scores))}</b>　　三科总分：<b>${fmt(e.threeTotal??sumSubjects(e.scores,THREE))}</b></p>`;
+}
+
+function renderAnalysis(){
+  const e=currentExam();
+  if(!e){
+    drawBar("analysisBar",[],[]);
+    drawBar("differenceBar",[],[]);
+    document.getElementById("analysisTable").innerHTML='<div class="empty">请先添加考试记录。</div>';
+    return;
+  }
+  drawBar("analysisBar",SUBJECTS,[
+    {name:"个人",values:SUBJECTS.map(s=>n(e.scores?.[s])),color:"#3978f6"},
+    {name:"年级最高",values:SUBJECTS.map(s=>n(e.highs?.[s])),color:"#18a878"},
+    {name:"班级平均",values:SUBJECTS.map(s=>n(e.averages?.[s])),color:"#f59e42"}
+  ],{height:300});
+  const diffs=SUBJECTS.map(s=>{
+    const a=n(e.scores?.[s]),b=n(e.averages?.[s]);
+    return a!==null&&b!==null?Number((a-b).toFixed(2)):null;
+  });
+  drawBar("differenceBar",SUBJECTS,[{name:"分差",values:diffs,color:"#9270db"}],{height:300});
+
+  document.getElementById("analysisTable").innerHTML=`<table><thead><tr>
+    <th>科目</th><th>个人分数</th><th>年级最高</th><th>班级平均</th><th>与班均分差</th><th>得分率</th>
+  </tr></thead><tbody>${SUBJECTS.map(s=>{
+    const score=n(e.scores?.[s]),high=n(e.highs?.[s]),avg=n(e.averages?.[s]);
+    const diff=score!==null&&avg!==null?score-avg:null;
+    const max=n(db.maxScores?.[s]);
+    const rate=score!==null&&max!==null&&max>0?score/max*100:null;
+    return `<tr><td>${s}</td><td>${fmt(score)}</td><td>${fmt(high)}</td><td>${fmt(avg)}</td>
+      <td class="${diff===null?"":diff>=0?"green":"red"}">${diff===null?"—":(diff>0?"+":"")+fmt(diff)}</td>
+      <td>${rate===null?"未设置满分":fmt(rate)+"%"}</td></tr>`;
+  }).join("")}</tbody></table>`;
+}
+
+function renderTrends(){
+  const exams=sortedExams();
+  const labels=exams.map(e=>e.name.length>8?e.name.slice(0,8)+"…":e.name);
+  drawLine("totalTrend",labels,exams.map(e=>n(e.total)??sumSubjects(e.scores)),{color:"#3978f6"});
+  drawLine("rankTrend",labels,exams.map(e=>n(e.rank)),{color:"#18a878"});
+  const note=exams.length<2?"目前只有一场考试记录，暂时无法判断成绩变化趋势。添加更多真实考试数据后，系统会自动绘制趋势。":"已根据已录入的考试数据绘制趋势；请确保考试日期与成绩准确。";
+  document.getElementById("totalTrendNote").textContent=note;
+  document.getElementById("rankTrendNote").textContent=note;
+  const select=document.getElementById("trendSubject");
+  const old=select.value;
+  select.innerHTML=SUBJECTS.map(s=>`<option>${s}</option>`).join("");
+  if(SUBJECTS.includes(old))select.value=old;
+  renderTrendSubject();
+}
+
+function renderTrendSubject(){
+  const s=document.getElementById("trendSubject").value||SUBJECTS[0];
+  const exams=sortedExams();
+  const labels=exams.map(e=>e.name.length>8?e.name.slice(0,8)+"…":e.name);
+  drawLine("subjectTrend",labels,exams.map(e=>n(e.scores?.[s])),{color:"#9270db",height:300});
+  document.getElementById("subjectTrendNote").textContent=
+    exams.length<2?"当前只有一场考试，无法形成单科趋势线。":"图表仅根据已录入的实际成绩绘制。";
+}
+
+function renderReport(){
+  const e=currentExam();
+  const el=document.getElementById("reportContent");
+  if(!e){el.innerHTML="<p>暂无考试数据。添加考试后即可生成报告。</p>";return;}
+  const total=n(e.total)??sumSubjects(e.scores);
+  const three=n(e.threeTotal)??sumSubjects(e.scores,THREE);
+  const rows=SUBJECTS.map(s=>{
+    const score=n(e.scores?.[s]),avg=n(e.averages?.[s]),high=n(e.highs?.[s]);
+    return {s,score,avg,high,diff:score!==null&&avg!==null?score-avg:null};
+  });
+  const valid=rows.filter(r=>r.score!==null);
+  const best=[...valid].sort((a,b)=>b.score-a.score)[0];
+  const weakest=[...valid].sort((a,b)=>a.score-b.score)[0];
+  const above=rows.filter(r=>r.diff!==null&&r.diff>=0);
+  const below=rows.filter(r=>r.diff!==null&&r.diff<0);
+  const totalAvg=n(e.classAverageTotal);
+  const totalHigh=n(e.gradeHighTotal);
+
+  el.innerHTML=`
+    <h2>${esc(e.name)} · 学业分析报告</h2>
+    <p>学生：${esc(db.profile.name)}　学号：${esc(db.profile.studentId)}　考试日期：${esc(e.date||"—")}</p>
+    <hr style="border:0;border-top:1px solid #e8edf5">
+    <h3>一、核心成绩</h3>
+    <div class="report-item">本次记录总分：<b>${fmt(total)}</b>；年级排名：<b>${fmt(e.rank)}</b>；三科总分：<b>${fmt(three)}</b>。</div>
+    <div class="report-item">年级总分最高记录：${fmt(totalHigh)}；班级总分平均：${fmt(totalAvg)}。以上对比值仅在录入的数据准确时有效。</div>
+    <h3>二、学科表现</h3>
+    <div class="report-item">当前已录入科目中，分数最高的是<b>${best?.s||"暂无数据"}</b>（${fmt(best?.score)}分）；分数最低的是<b>${weakest?.s||"暂无数据"}</b>（${fmt(weakest?.score)}分）。单纯比较原始分数时，需注意各科满分可能不同。</div>
+    <div class="report-item">与班级平均分相比，已知高于或等于班均的科目：${above.length?above.map(r=>r.s).join("、"):"暂无"}；低于班均的科目：${below.length?below.map(r=>r.s).join("、"):"暂无"}。此比较基于录入的班级平均分。</div>
+    <h3>三、学习建议</h3>
+    <div class="report-item">建议优先查看低于班级平均分的学科，结合具体试卷逐题整理错因，区分概念理解、解题方法、计算和审题等问题。仅凭总分不能确定具体知识漏洞。</div>
+    <div class="report-item">建议为每次考试保留相同格式的成绩记录，并确认考试日期、总分、班级平均分和年级最高分。积累至少两场真实考试后，才能初步观察分数变化；更多考试数据通常更有参考价值。</div>
+    <h3>四、数据完整性</h3>
+    <div class="report-item">当前共记录 ${db.exams.length} 场考试。已配置满分的科目为 ${SUBJECTS.filter(s=>n(db.maxScores?.[s])!==null).length} 门。未确认满分的科目不计算得分率；没有录入的排名或比较数据不会自动推测。</div>
+    <p style="color:#8491a7;font-size:11px;margin-top:25px">本报告由已录入的数据自动生成，仅供个人学习复盘参考。</p>`;
+}
+
+function renderMaxScores(){
+  document.getElementById("maxScoreForm").innerHTML=SUBJECTS.map(s=>`
+    <div class="subject-box"><label>${s}满分</label>
+    <input type="number" min="1" step="0.5" id="max-${s}" value="${db.maxScores?.[s]??""}" placeholder="请填写"></div>
+  `).join("");
+}
+
+function renderAll(){
+  renderOverview();
+  renderExams();
+  renderAnalysis();
+  renderTrends();
+  renderReport();
+  renderMaxScores();
+  document.getElementById("profileName").value=db.profile.name||"";
+  document.getElementById("profileId").value=db.profile.studentId||"";
+}
+
+function buildSubjectInputs(containerId,key,obj){
+  document.getElementById(containerId).innerHTML=SUBJECTS.map(s=>`
+    <div class="subject-box">
+      <label>${s}</label>
+      <input type="number" step="0.01" id="${key}-${s}" value="${obj?.[s]??""}" placeholder="可留空">
+    </div>`).join("");
+}
+
+function openAddExam(){
+  document.getElementById("examForm").reset();
+  document.getElementById("editExamId").value="";
+  document.getElementById("modalTitle").textContent="新增考试记录";
+  document.getElementById("examDate").value=new Date().toISOString().slice(0,10);
+  buildSubjectInputs("personalInputs","p",{});
+  buildSubjectInputs("highInputs","h",{});
+  buildSubjectInputs("avgInputs","a",{});
+  document.getElementById("examModal").style.display="block";
+}
+
+function closeModal(){
+  document.getElementById("examModal").style.display="none";
+}
+
+function editExam(id){
+  const e=db.exams.find(x=>x.id===id);
+  if(!e)return;
+  openAddExam();
+  document.getElementById("modalTitle").textContent="编辑考试记录";
+  document.getElementById("editExamId").value=e.id;
+  document.getElementById("examName").value=e.name||"";
+  document.getElementById("examType").value=e.type||"月考";
+  document.getElementById("examDate").value=e.date||"";
+  document.getElementById("examRank").value=e.rank??"";
+  document.getElementById("examTotal").value=e.total??"";
+  document.getElementById("examThree").value=e.threeTotal??"";
+  buildSubjectInputs("personalInputs","p",e.scores);
+  buildSubjectInputs("highInputs","h",e.highs);
+  buildSubjectInputs("avgInputs","a",e.averages);
+}
+
+function readSubjectInputs(key){
+  const out={};
+  SUBJECTS.forEach(s=>out[s]=n(document.getElementById(key+"-"+s).value));
+  return out;
+}
+
+document.getElementById("examForm").addEventListener("submit",function(ev){
+  ev.preventDefault();
+  const id=document.getElementById("editExamId").value||("exam-"+Date.now());
+  const scores=readSubjectInputs("p");
+  const highs=readSubjectInputs("h");
+  const averages=readSubjectInputs("a");
+  const typedTotal=n(document.getElementById("examTotal").value);
+  const typedThree=n(document.getElementById("examThree").value);
+  const exam={
+    id,
+    name:document.getElementById("examName").value.trim(),
+    type:document.getElementById("examType").value,
+    date:document.getElementById("examDate").value,
+    rank:n(document.getElementById("examRank").value),
+    total:typedTotal??sumSubjects(scores),
+    threeTotal:typedThree??sumSubjects(scores,THREE),
+    scores,highs,averages
+  };
+  if(!exam.name){alert("请填写考试名称。");return;}
+  if(!exam.date){alert("请填写考试日期。");return;}
+  const existing=db.exams.findIndex(x=>x.id===id);
+  if(existing>=0)db.exams[existing]=exam;
+  else db.exams.push(exam);
+  selectedExamId=id;
+  saveData();
+  closeModal();
+  renderAll();
+  alert("考试记录已保存。");
+});
+
+function deleteExam(id){
+  const e=db.exams.find(x=>x.id===id);
+  if(!e)return;
+  if(!confirm(`确定删除“${e.name}”吗？删除后无法直接恢复，请先备份。`))return;
+  db.exams=db.exams.filter(x=>x.id!==id);
+  if(selectedExamId===id)selectedExamId=db.exams[0]?.id||null;
+  saveData();
+  renderAll();
+}
+
+function saveMaxScores(){
+  db.maxScores=db.maxScores||{};
+  SUBJECTS.forEach(s=>{
+    db.maxScores[s]=n(document.getElementById("max-"+s).value);
+  });
+  saveData();renderAll();alert("满分设置已保存。");
+}
+
+function saveProfile(){
+  db.profile={
+    name:document.getElementById("profileName").value.trim()||"未命名学生",
+    studentId:document.getElementById("profileId").value.trim()
+  };
+  saveData();renderAll();alert("个人资料已保存。");
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="个人学业档案备份.json";a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event){
+  const file=event.target.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const imported=JSON.parse(reader.result);
+      if(!imported||!Array.isArray(imported.exams)||!imported.profile){
+        throw new Error("格式不正确");
+      }
+      if(!confirm("导入将替换当前数据，建议先导出备份。是否继续？"))return;
+      db=imported;
+      if(!db.maxScores)db.maxScores={};
+      selectedExamId=db.exams[0]?.id||null;
+      saveData();renderAll();alert("导入成功。");
+    }catch(err){alert("导入失败：文件不是有效的学业档案 JSON。");}
+    finally{event.target.value="";}
+  };
+  reader.readAsText(file);
+}
+
+function resetData(){
+  if(!confirm("这会将数据恢复为代码中的初始数据，当前记录可能丢失。建议先导出备份。确定继续吗？"))return;
+  db=clone(INITIAL_DATA);
+  selectedExamId=db.exams[0]?.id||null;
+  saveData();renderAll();
+}
+
+window.addEventListener("resize",()=>{
+  clearTimeout(window.__resizeTimer);
+  window.__resizeTimer=setTimeout(renderAll,150);
+});
+
+saveData();
+renderAll();
+</script>
+</body>
+</html>
